@@ -1,0 +1,36 @@
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Особистий дашборд</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md bg-white p-6 rounded-xl shadow-xl">
+    <h2 class="text-2xl font-bold mb-4 text-center">Вхід у дашборд</h2>
+
+    <div id="auth-form">
+      <select id="username" class="w-full border p-2 rounded mb-3">
+        <option value="">Оберіть користувача</option>
+      </select>
+
+      <input type="password" id="password" placeholder="Пароль" class="w-full border p-2 rounded mb-3" />
+      <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Увійти</button>
+
+      <div class="text-center text-sm mt-4 text-gray-600">
+        або
+      </div>
+      <button onclick="toggleRegister()" class="text-blue-500 text-sm mt-2 w-full">Створити нового користувача</button>
+    </div>
+
+    <div id="register-form" class="hidden">
+      <input type="text" id="newUsername" placeholder="Ім'я користувача" class="w-full border p-2 rounded mb-3" />
+      <input type="password" id="newPassword" placeholder="Пароль" class="w-full border p-2 rounded mb-3" />
+      <button onclick="register()" class="bg-green-500 text-white px-4 py-2 rounded w-full">Зареєструватися</button>
+      <button onclick="toggleRegister()" class="text-gray-600 text-sm mt-2 w-full">Назад до входу</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
