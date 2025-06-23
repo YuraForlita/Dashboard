@@ -54,7 +54,7 @@
       if (users.length === 0) return alert("Користувача не знайдено");
       if (users[0].passwordHash === hash) {
         localStorage.setItem("user", username);
-        window.location.href = "./dashboard.html";
+        window.location.href = location.pathname.replace("index.html", "") + "dashboard.html";
       } else {
         alert("Невірний пароль");
       }
