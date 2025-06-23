@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мій дашборд</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="p-4 flex justify-between items-center bg-white shadow">
+    <h1 class="text-xl font-semibold">📋 Дашборд: <span id="usernameDisplay"></span></h1>
+    <button onclick="logout()" class="text-red-500 text-sm">Вийти</button>
+  </div>
+
+  <div class="p-4">
+    <button onclick="showAddForm()" class="mb-4 bg-green-500 text-white px-4 py-2 rounded">+ Додати посилання</button>
+
+    <div id="linkForm" class="hidden mb-6 bg-white p-4 rounded shadow">
+      <input id="linkTitle" type="text" placeholder="Назва" class="w-full border p-2 mb-2 rounded">
+      <input id="linkURL" type="url" placeholder="Посилання" class="w-full border p-2 mb-2 rounded">
+      <input id="linkDesc" type="text" placeholder="Опис (необов’язково)" class="w-full border p-2 mb-2 rounded">
+      <input id="linkTags" type="text" placeholder="Теги через кому" class="w-full border p-2 mb-2 rounded">
+      <button onclick="addLink()" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Зберегти</button>
+    </div>
+
+    <div id="linksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </div>
+
+  <script>
+    const SHEETDB_URL = "https://sheetdb.io/api/v1/YOUR_SHEET_ID";
+    const user = localStorage.getItem("user");
+    if (!user) window.location.href = location.pathname.replace("dashboard.html", "") + "index.html";
+    document.getElementById("usernameDisplay").textContent = user;
+
+    async function fetchLinks() {
+      const res = await fetch(`${SHEETDB_URL}/search?username=${user}`);
+      const data = await res.json();
+      const container = document.getElementById("linksContainer");
+      container.innerHTML = "";
+
+      data.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded shadow relative";
+        card.innerHTML = `
+          <h3 class="text-lg font-bold">${item.title}</h3>
+          <a href="${item.link}" target="_blank" class="text-blue-500 text-sm break-words">${item.link}</a>
+          <p class="text-sm text-gray-600 mt-1">${item.description || ''}</p>
+          <div class="text-xs text-gray-400 mt-1">${item.tags || ''}</div>
+          <button onclick="deleteLink(${item.id || index})" class="absolute top-2 right-2 text-red-500 text-xs">✖</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function showAddForm() {
+      document.getElementById("linkForm").classList.toggle("hidden");
+    }
+
+    async function addLink() {
+      const title = document.getElementById("linkTitle").value.trim();
+      const link = document.getElementById("linkURL").value.trim();
+      const description = document.getElementById("linkDesc").value.trim();
+      const tags = document.getElementById("linkTags").value.trim();
+
+      if (!title || !link) return alert("Назва і посилання обов’язкові");
+
+      const body = {
+        data: {
+          username: user,
+          title,
+          link,
+          description,
+          tags
+        }
+      };
+
+      await fetch(SHEETDB_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      document.getElementById("linkForm").classList.add("hidden");
+      document.getElementById("linkTitle").value = "";
+      document.getElementById("linkURL").value = "";
+      document.getElementById("linkDesc").value = "";
+      document.getElementById("linkTags").value = "";
+      fetchLinks();
+    }
+
+    async function deleteLink(index) {
+      if (!confirm("Видалити це посилання?")) return;
+      const res = await fetch(`${SHEETDB_URL}/search?username=${user}`);
+      const data = await res.json();
+      const item = data[index];
+
+      if (item && item.id) {
+        await fetch(`${SHEETDB_URL}/id/${item.id}`, { method: "DELETE" });
+        fetchLinks();
+      } else {
+        alert("Не вдалося видалити");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = location.pathname.replace("dashboard.html", "") + "index.html";
+    }
+
+    fetchLinks();
+  </script>
+</body>
+</html>

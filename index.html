@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вхід у дашборд</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+    <h1 class="text-xl font-bold mb-4">👤 Вхід або реєстрація</h1>
+    <input type="text" id="username" placeholder="Введіть ім'я" class="border p-2 w-full mb-4 rounded">
+    <input type="password" id="password" placeholder="Пароль" class="border p-2 w-full mb-4 rounded">
+    <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Увійти</button>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!username || !password) return alert("Заповніть всі поля");
+
+      localStorage.setItem("user", username);
+      localStorage.setItem("pass", password);
+      window.location.href = location.pathname.replace("index.html", "") + "dashboard.html";
+    }
+  </script>
+</body>
+</html>
